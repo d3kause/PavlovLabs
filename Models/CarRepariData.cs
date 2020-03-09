@@ -7,6 +7,7 @@ namespace PavlovLabs.Models
 {
     public class CarRepairData
     {
+        public Guid Id { get; set; } = Guid.Empty;
         public string Mark { get; set; }
         public string Model { get; set; }
         //     public string VinCode { public get { return VinCode; } set { VinCode = value.Replace(" ", ""); } }
