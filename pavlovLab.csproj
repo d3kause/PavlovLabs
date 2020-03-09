@@ -4,8 +4,8 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <Version>0.0.1-rc.1</Version>
     <Authors>Igonin V. V. Miroshnikova A. M.</Authors>
-    <Company>nstu.ru</Company>
-    <Product>PavlovLabWork2</Product>
+    <Company>Igonin.Miroshnikova</Company>
+    <Product>PavlovLabWorks</Product>
     <PackageId>MyApp</PackageId>
     <FileVersion>0.0.1</FileVersion>
   </PropertyGroup>
