@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PavlovLabs.Models;
+using PavlovLabs.Storage;
 
 namespace PavlovLabs.Controllers
 {
@@ -12,20 +10,21 @@ namespace PavlovLabs.Controllers
     [ApiController]
     public class CarRepairController : ControllerBase
     {
-        private static List<CarRepairData> _data = new List<CarRepairData>();
+      //  private static List<CarRepairData> _data = new List<CarRepairData>();
+        private static IStorage<CarRepairData> _memCache =  new MemCache();
         // GET api/CarRepair
         [HttpGet]
         public ActionResult<IEnumerable<CarRepairData>> Get()
         {
-            return Ok(_data);
+            return Ok(_memCache.All);
         }
 
         // GET api/CarRepair/5
         [HttpGet("{id}")]
-        public ActionResult<CarRepairData> Get(int id)
+        public ActionResult<CarRepairData> Get(Guid id)
         {
-            if (id >= _data.Count) return NotFound("No such");
-            return Ok(_data[id]);
+            if (_memCache.Has(id)) return NotFound("No such");
+            return Ok(_memCache[id]);
         }
 
         // POST api/CarRepair
@@ -35,21 +34,20 @@ namespace PavlovLabs.Controllers
              var validationResult = value.Validate();
              if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
 
-             _data.Add(value);
+             _memCache.Add(value);
             return Ok($"{value.ToString()} has been added");
         }
 
         // PUT api/CarRepair/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] CarRepairData value)
+        public IActionResult Put(Guid id, [FromBody] CarRepairData value)
         {
-            if (_data.Count <= id) return NotFound("No such");
+            if (!_memCache.Has(id)) return NotFound("No such");
             var validationResult = value.Validate();
-
             if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
-            var previousValue = _data[id];
+            var previousValue = _memCache[id];
 
-            _data[id] = value;
+            _memCache[id] = value;
             return Ok($"{previousValue.ToString()}\n" +
                 $"has been updated to\n" +
                 $"{value.ToString()}");
@@ -57,12 +55,12 @@ namespace PavlovLabs.Controllers
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(Guid id)
         {
-            if (_data.Count <= id) return NotFound("No such");
-            var valueToRemove = _data[id];
+            if (_memCache.Has(id)) return NotFound("No such");
+            var valueToRemove = _memCache[id];
 
-            _data.RemoveAt(id);
+            _memCache.RemoveAt(id);
             return Ok($"{valueToRemove.ToString()} has been removed");
         }
     }
